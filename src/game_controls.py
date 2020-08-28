@@ -20,7 +20,7 @@ def game_loop(screen: Surface, board: BoardState, ai: AI):
                 if event.button == 1:
                     # do move
                     board.notification = None
-                    board = board.do_move(x, y)
+                    board = board.do_move(y, x)
 
                 elif event.button == 3:
                     # change figure
@@ -39,10 +39,12 @@ def game_loop(screen: Surface, board: BoardState, ai: AI):
                 if event.key == pygame.K_z:
                     pass
 
-                # if event.key == pygame.K_SPACE:
-                #     new_board = ai.next_move(board)
-                #     if new_board is not None:
-                #         board = new_board
+                if (settings.is_ai_enabled and event.key == pygame.K_SPACE and
+                        settings.first_player_is_ai ==
+                        board.is_first_player_turn):
+                    new_board = ai.next_move(board, None)[0]
+                    if new_board is not None:
+                        board = new_board
 
         if board.is_game_finished:
             board.notification = "Second" if board.is_first_player_turn \

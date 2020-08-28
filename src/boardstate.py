@@ -1,4 +1,5 @@
 from itertools import product
+from typing import List
 
 import numpy as np
 import src.settings as settings
@@ -28,7 +29,7 @@ class BoardState:
 
         return new_board_state
 
-    def do_move(self, x, y) -> 'BoardState':
+    def do_move(self, y, x) -> 'BoardState':
         if self.board[y, x] != 0:  # invalid move
             self.notification = "This field is already occupied"
             return self.copy()
@@ -39,11 +40,25 @@ class BoardState:
 
         return result
 
-    # def get_possible_moves(self) -> List['BoardState']:
-    #     return [] # todo
+    def get_good_possible_moves(self) -> List['BoardState']:
+        possible_moves = []
+        for y, x in product(range(settings.board_size),
+                            range(settings.board_size)):
+            if self.board[y, x] == 0:
+                is_interesting = False
+                for dy, dx in settings.interesting_zone:
+                    if (self.is_coord_correct(y + dy, x + dx) and
+                            self.board[y + dy, x + dx] != 0):
+                        is_interesting = True
+                        break
+
+                if is_interesting:
+                    possible_moves.append(self.copy())
+                    possible_moves[-1] = possible_moves[-1].do_move(y, x)
+        return possible_moves
 
     @staticmethod
-    def __is_coord_correct(y: int, x: int) -> bool:
+    def is_coord_correct(y: int, x: int) -> bool:
         return 0 <= y < settings.board_size and 0 <= x < settings.board_size
 
     @property
@@ -53,17 +68,16 @@ class BoardState:
             if self.board[y, x] == 0:
                 continue
 
-            modes = ((1, 0), (0, 1), (1, 1), (1, -1))
             answers_for_win_pos = [True, False, False, False, False, False,
                                    True]
-            for mode in modes:
+            for vector in settings.basic_vectors:
                 victory = True
                 for diff in range(-1, 6):
-                    new_y = y + mode[0] * diff
-                    new_x = x + mode[1] * diff
+                    new_y = y + vector[0] * diff
+                    new_x = x + vector[1] * diff
 
                     if answers_for_win_pos[diff + 1] != \
-                            (not BoardState.__is_coord_correct(new_y, new_x) or
+                            (not BoardState.is_coord_correct(new_y, new_x) or
                              self.board[new_y, new_x] != self.board[y, x]):
                         victory = False
                         break
