@@ -18,13 +18,13 @@ class BoardState:
         return BoardState(self.board.copy(), self.is_first_player_turn,
                           self.creator_mode, self.notification)
 
-    def save(self):
-        with open(game_set.save_file_name, 'wb') as f:
+    def save(self, filename=game_set.save_file_name):
+        with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
     @staticmethod
-    def load():
-        with open(game_set.save_file_name, 'rb') as f:
+    def load(filename=game_set.save_file_name):
+        with open(filename, 'rb') as f:
             new_board_state = pickle.load(f)
 
         return new_board_state

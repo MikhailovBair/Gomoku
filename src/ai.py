@@ -28,8 +28,9 @@ class PositionEvaluation:
 
 
 class AI:
-    def __init__(self, position_evaluation: PositionEvaluation,
-                 search_depth: int):
+    def __init__(self, position_evaluation: PositionEvaluation =
+                 PositionEvaluation(),
+                 search_depth: int = game_set.ai_search_depth):
         self.position_evaluation: PositionEvaluation = position_evaluation
         self.depth: int = search_depth
 
@@ -50,8 +51,8 @@ class AI:
             if cur_board is None:
                 continue
 
-            # if top_res is not None and ((top_res > cur_score) != board_config):
-            #     return None, 0
+            if top_res is not None and ((top_res > cur_score) == board_config):
+                return None, 0
 
             if best_value is None or (best_value > cur_score) == board_config:
                 best_board, best_value = move, cur_score

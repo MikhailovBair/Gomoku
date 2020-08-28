@@ -10,6 +10,6 @@ interesting_zone = ((-2, 0), (-1, -1), (0, -2), (1, -1), (2, 0),
                     (1, 1), (0, 2), (-1, 1), (1, 0), (-1, 0), (0, 1), (1, 0))
 
 is_ai_enabled: bool = True
-first_player_is_ai: bool = False
+first_player_is_ai: bool = True
 
 save_file_name = 'saves/savefile.pickle'
