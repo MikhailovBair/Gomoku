@@ -2,7 +2,7 @@ from itertools import product
 from typing import List
 
 import numpy as np
-import src.settings as settings
+import settings.game_settings as game_set
 import pickle
 
 
@@ -19,12 +19,12 @@ class BoardState:
                           self.creator_mode, self.notification)
 
     def save(self):
-        with open('saves/savefile.pickle', 'wb') as f:
+        with open(game_set.save_file_name, 'wb') as f:
             pickle.dump(self, f)
 
     @staticmethod
     def load():
-        with open('saves/savefile.pickle', 'rb') as f:
+        with open(game_set.save_file_name, 'rb') as f:
             new_board_state = pickle.load(f)
 
         return new_board_state
@@ -42,11 +42,11 @@ class BoardState:
 
     def get_good_possible_moves(self) -> List['BoardState']:
         possible_moves = []
-        for y, x in product(range(settings.board_size),
-                            range(settings.board_size)):
+        for y, x in product(range(game_set.board_size),
+                            range(game_set.board_size)):
             if self.board[y, x] == 0:
                 is_interesting = False
-                for dy, dx in settings.interesting_zone:
+                for dy, dx in game_set.interesting_zone:
                     if (self.is_coord_correct(y + dy, x + dx) and
                             self.board[y + dy, x + dx] != 0):
                         is_interesting = True
@@ -59,20 +59,19 @@ class BoardState:
 
     @staticmethod
     def is_coord_correct(y: int, x: int) -> bool:
-        return 0 <= y < settings.board_size and 0 <= x < settings.board_size
+        return 0 <= y < game_set.board_size and 0 <= x < game_set.board_size
 
     @property
     def is_game_finished(self) -> bool:
-        for y, x in product(range(settings.board_size),
-                            range(settings.board_size)):
+        for y, x in product(range(game_set.board_size),
+                            range(game_set.board_size)):
             if self.board[y, x] == 0:
                 continue
 
-            answers_for_win_pos = [True, False, False, False, False, False,
-                                   True]
-            for vector in settings.basic_vectors:
+            answers_for_win_pos = [True] + [False] * game_set.win_len + [True]
+            for vector in game_set.basic_vectors:
                 victory = True
-                for diff in range(-1, 6):
+                for diff in range(-1, game_set.win_len + 1):
                     new_y = y + vector[0] * diff
                     new_x = x + vector[1] * diff
 
@@ -88,10 +87,10 @@ class BoardState:
 
     @staticmethod
     def initial_state() -> 'BoardState':
-        board = np.zeros(shape=(settings.board_size, settings.board_size),
+        board = np.zeros(shape=(game_set.board_size, game_set.board_size),
                          dtype=np.int8)
 
-        board[settings.board_size // 2, settings.board_size // 2] = -1
-        # ход чёрных
+        board[game_set.board_size // 2, game_set.board_size // 2] = -1
+        # преимущественный ход чёрных
 
         return BoardState(board, True, False)

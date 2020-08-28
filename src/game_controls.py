@@ -1,14 +1,14 @@
 import pygame
 from pygame import Surface
 
-import src.settings as settings
+import settings.game_settings as game_set
 from src.boardstate import BoardState
 from src.ai import AI
 from src.gui import draw_board
 
 
 def game_loop(screen: Surface, board: BoardState, ai: AI):
-    grid_size = screen.get_size()[0] // settings.board_size
+    grid_size = screen.get_size()[0] // game_set.board_size
 
     while True:
         for event in pygame.event.get():
@@ -17,13 +17,10 @@ def game_loop(screen: Surface, board: BoardState, ai: AI):
 
             if event.type == pygame.MOUSEBUTTONUP:
                 x, y = [p // grid_size for p in event.pos]
-                if event.button == 1:
-                    # do move
+                if event.button == 1:  # do move
                     board.notification = None
                     board = board.do_move(y, x)
-
-                elif event.button == 3:
-                    # change figure
+                elif event.button == 3:  # change figure
                     board.board[y, x] = ((board.board[y, x] + 2) % 3) - 1
 
             if event.type == pygame.KEYDOWN:
@@ -39,8 +36,8 @@ def game_loop(screen: Surface, board: BoardState, ai: AI):
                 if event.key == pygame.K_z:
                     pass
 
-                if (settings.is_ai_enabled and event.key == pygame.K_SPACE and
-                        settings.first_player_is_ai ==
+                if (game_set.is_ai_enabled and event.key == pygame.K_SPACE and
+                        game_set.first_player_is_ai ==
                         board.is_first_player_turn):
                     new_board = ai.next_move(board, None)[0]
                     if new_board is not None:
