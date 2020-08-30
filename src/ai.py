@@ -42,8 +42,7 @@ class AI:
         moves = board.get_good_possible_moves()
         best_value = None
         best_board = None
-        board_config = (game_set.first_player_is_ai ^
-                        board.is_first_player_turn)
+        board_config = board.is_first_player_turn ^ 1
         for move in moves:
             cur_board, cur_score = AI(self.position_evaluation,
                                       self.depth - 1).next_move(move,
